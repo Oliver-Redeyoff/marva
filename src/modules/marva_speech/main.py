@@ -1,6 +1,7 @@
+import time
+
 from gtts import gTTS
 from pygame import mixer
-import time
 
 mixer.init()
 

@@ -1,0 +1,7 @@
+# marva_face_recognition module
+face_recognition
+cv2
+
+# marva_speech module
+gtts
+pygame
