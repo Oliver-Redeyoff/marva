@@ -1,6 +1,6 @@
 # marva_face_recognition module
 face_recognition
-cv2
+opencv-python
 
 # marva_speech module
 gtts
