@@ -2,7 +2,7 @@ import os
 from slack import WebClient
 from slack.errors import SlackApiError
 
-client = WebClient(token='xoxb-3587969578531-3611836213232-WnXIo2F2WUC5mZxEBzjI0ANZ')
+client = WebClient(token=os.environ['SLACK_TOKEN'])
 __location__ = os.path.realpath(os.path.join(os.getcwd(), os.path.dirname(__file__)))
 
 def send(message: str):
