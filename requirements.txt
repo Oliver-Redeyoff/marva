@@ -5,3 +5,6 @@ cv2
 # marva_speech module
 gtts
 pygame
+
+# marva_slack module
+slackclient

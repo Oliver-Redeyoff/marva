@@ -13,12 +13,14 @@ from utilities import create_dir, retrieve, store
 import face_recognition
 import cv2
 
+print("Initialising face recognition module")
 
 # Define Face dataclass
 @dataclass
 class Face:
     first_name: str
     last_name: str
+    image: any
     encoding: any
     appeared: bool
 
@@ -87,16 +89,23 @@ def get_faces() -> List[Face]:
 
     # Find all the faces and face encodings in the current frame of video
     face_locations = face_recognition.face_locations(rgb_small_frame)
-    face_encodings = face_recognition.face_encodings(rgb_small_frame, face_locations)
+    print(face_locations)
 
     faces = []
-    for face_encoding in face_encodings:
-        # See if the face is a match for the known face(s)
+    for face_location in face_locations:
+        top, right, bottom, left = face_location
+
+        crop_img = rgb_small_frame[top:bottom, left:right]
+        cv2.imshow('image', crop_img)
+
+        # See if the face is a match for the known faces
+        face_encoding = face_recognition.face_encodings(crop_img)[0]
         matches = face_recognition.compare_faces([face.encoding for face in known_faces], face_encoding)
 
         if True in matches:
             match_index = matches.index(True)
             face = known_faces[match_index]
+            face.image = crop_img
             faces.append(face)
         
         else:
