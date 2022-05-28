@@ -1,34 +1,35 @@
 import time
-from typing import List
 
 from modules.marva_face_recognition import main as face_recognition
-from modules.marva_face_recognition.main import Face
 from modules.marva_speech import main as speech
 from modules.marva_slack import main as slack
 
 import cv2
 
-speech.say("Hi there, my name is Marva")
+print('''
+ ___      ___       __        _______  ___      ___  __      
+|"  \    /"  |     /""\      /"      \|"  \    /"  |/""\     
+ \   \  //   |    /    \    |:        |\   \  //  //    \    
+ /\\  \/.    |   /' /\  \   |_____/   ) \\  \/. .//' /\  \   
+|: \.        |  //  __'  \   //      /   \.    ////  __'  \  
+|.  \    /:  | /   /  \\  \ |:  __   \    \\   //   /  \\  \ 
+|___|\__/|___|(___/    \___)|__|  \___)    \__/(___/    \___)
+                                                             
+''')
+face_recognition.init()
+speech.init()
+slack.init()
 
-face_recognition.init_known_faces(False)
+speech.say("Hi there, my name is Marva")
 
 while(True):
 
-    # See what faces are visible
-    print("Looking for faces")
-    faces: List[Face] = face_recognition.get_faces()
-    print("Got faces")
-
-    # Greet them
-    for face in faces:
-        if (face != None):
-            if (not face.appeared):
-                speech.say("I can see you, " + face.first_name)
-                face.appeared = True
-                cv2.imwrite("test.png", face.image)
-                slack.send("I saw " + face.first_name)
-                slack.send_image("test.png")
-        else:
-            speech.say("I can see someone I don't know")
+    # see what faces are visible
+    (faces, image) = face_recognition.get_faces()
+    
+    # send update via slack
+    slack.send("I can see " + ", ".join([face.first_name for face in faces]))
+    cv2.imwrite("test.png", image)
+    slack.send_file("./test.png")
 
     time.sleep(1)

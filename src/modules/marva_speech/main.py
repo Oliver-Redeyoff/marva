@@ -1,17 +1,28 @@
-
 import time
 import os
 from gtts import gTTS
 from pygame import mixer
 
-print("Initialising speech module")
 
-mixer.init()
+# Define global variables
+__location__: str
+
+
+# Init module
+def init():
+    global __location__
+
+    print("--Initialising speech module--")
+    
+    __location__ = os.path.realpath(os.path.join(os.getcwd(), os.path.dirname(__file__)))
+    mixer.init()
+
 
 # Say a given string
 def say(text: str):
-    __location__ = os.path.realpath(os.path.join(os.getcwd(), os.path.dirname(__file__)))
+    global __location__
 
+    # wait for mixer to be done
     while mixer.music.get_busy() == True:
         time.sleep(0.1)
 
