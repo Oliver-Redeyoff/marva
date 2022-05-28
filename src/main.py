@@ -13,6 +13,9 @@ def main():
 
         # see what faces are visible
         (faces, image) = face_recognition.get_faces()
+        if (faces==None and image==None):
+            print("There was an issue with detecting the faces")
+            continue
         
         # send update via slack
         slack.send("I can see " + ", ".join([face.first_name for face in faces]))
