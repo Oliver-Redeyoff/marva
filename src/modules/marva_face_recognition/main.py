@@ -17,13 +17,14 @@ import numpy as np
 
 
 # Define Face dataclass
-@dataclass
+@dataclass(eq=False)
 class Face:
     first_name: str
     last_name: str
-    image: any
     encoding: any
-    appeared: bool
+
+    def __eq__(self, other):
+        return (self.first_name+self.last_name) == (other.first_name+other.last_name)
 
 
 # Define global variables
@@ -70,8 +71,7 @@ def init(ignore_cache: bool = False, detect_batch_size_: int = 3):
             known_faces.append(Face(
                 name[0],
                 name[1],
-                face_encodings[0],
-                False
+                face_encodings[0]
             ))
 
     store(known_faces, cache_path)
@@ -85,7 +85,7 @@ def close():
     video_capture.release()
 
 
-# Get faces in current frame of video feed
+# Get faces accross multiple frames of video feed
 def get_faces() -> Tuple[List[Face], any]:
     global known_faces, video_capture, detect_batch_size
 
@@ -102,13 +102,18 @@ def get_faces() -> Tuple[List[Face], any]:
     consistent = True
     for faces1 in faces_batch:
         for faces2 in faces_batch:
-            if faces1 != faces2:
-                consistent = False
+            for face1 in faces1:
+                for face2 in faces2:
+                    if face1 != face2:
+                        consistent = False
+                        
     if (consistent):
         return (faces_batch[-1], image_batch[-1])
     else:
         return (None, None)
 
+
+# Get faces in current frame of video feed
 def get_current_faces() -> Tuple[List[Face], any]:
     global known_faces, video_capture
 
@@ -131,10 +136,15 @@ def get_current_faces() -> Tuple[List[Face], any]:
         matches = face_recognition.compare_faces([face.encoding for face in known_faces], face_encoding)
 
         # if a match was found in known_face_encodings, just use the first one
-        face = None
         if True in matches:
             first_match_index = matches.index(True)
             face = known_faces[first_match_index]
+        else:
+            face = Face(
+                "Unknown",
+                "Unknown",
+                face_encoding
+            )
         faces.append(face)
 
     # display the results
@@ -151,6 +161,6 @@ def get_current_faces() -> Tuple[List[Face], any]:
         # draw a label with a name below the face
         cv2.rectangle(frame, (left, bottom - 35), (right, bottom), (0, 0, 255), cv2.FILLED)
         font = cv2.FONT_HERSHEY_DUPLEX
-        cv2.putText(frame, face.first_name if face!=None else "Unknown", (left + 6, bottom - 6), font, 1.0, (255, 255, 255), 1)
+        cv2.putText(frame, face.first_name, (left + 6, bottom - 6), font, 1.0, (255, 255, 255), 1)
 
     return (faces, frame)
