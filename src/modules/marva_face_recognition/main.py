@@ -8,8 +8,6 @@ from typing import List, Tuple
 
 # Have to append root folder in order to import utilities
 import sys
-
-from pytest import console_main
 sys.path.append(".")
 from utilities import retrieve, store
 
