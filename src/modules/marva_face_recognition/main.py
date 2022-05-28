@@ -98,17 +98,20 @@ def get_faces() -> Tuple[List[Face], any]:
     rgb_small_frame = small_frame[:, :, ::-1]
 
     # find all the faces and face encodings in the current frame of video
+    # face_locations = face_recognition.face_locations(rgb_small_frame)
+
     face_locations = face_recognition.face_locations(rgb_small_frame)
+    face_encodings = face_recognition.face_encodings(rgb_small_frame, face_locations)
 
     faces = []
-    for face_location in face_locations:
+    for index, face_encoding in enumerate(face_encodings):
 
         # crop image to just get part containing face
-        top, right, bottom, left = face_location
+        top, right, bottom, left = face_locations[index]
         crop_img = rgb_small_frame[top:bottom, left:right]
 
         # see if the face is a match for the known faces
-        face_encoding = face_recognition.face_encodings(crop_img)[0]
+        # face_encoding = face_recognition.face_encodings(crop_img)[0]
         matches = face_recognition.compare_faces([face.encoding for face in known_faces], face_encoding)
         
         # retrieve matching face if there is one

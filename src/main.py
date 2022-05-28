@@ -39,3 +39,6 @@ if __name__ == "__main__":
     slack.init()
 
     speech.say("Hi there, my name is Marva")
+
+    # Start main loop
+    main()
