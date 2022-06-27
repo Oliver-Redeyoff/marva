@@ -1,3 +1,5 @@
 __pycache__/**
 /*.png
-**..DS_Store
+**.wav
+**.pt
+**.DS_Store

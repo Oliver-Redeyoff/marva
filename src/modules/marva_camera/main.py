@@ -29,7 +29,6 @@ class Face:
 
 # Define global variables
 known_faces: List[Face]
-# video_capture: any
 __location__: str
 
 
@@ -75,20 +74,15 @@ def init(ignore_cache: bool = False, detect_batch_size_: int = 1):
     store(known_faces, cache_path)
 
 
-# Closes video capture
-def close():
-    global video_capture
-
-    # release handle to the webcam
-    video_capture.release()
-
-
 # Get faces in current frame of video feed
-def get_faces_batch():
+def get_faces():
     global known_faces, detect_batch_size
+
+    detected_faces: List[Face] = []
 
     # get a reference to webcam #0 (the default one)
     video_capture = cv2.VideoCapture(0)
+    time.sleep(0.5)
 
     # grab a single frame of video
     _, frame = video_capture.read()
@@ -103,7 +97,7 @@ def get_faces_batch():
     face_locations = face_recognition.face_locations(small_frame)
     face_encodings = face_recognition.face_encodings(small_frame, face_locations)
 
-    print("I found {} face(s) in frame".format(len(face_locations)))
+    # match faces and annotate them
     for (top, right, bottom, left), face_encoding in zip(face_locations, face_encodings):
         matches = face_recognition.compare_faces([face.encoding for face in known_faces], face_encoding)
         if (True in matches):
@@ -115,12 +109,13 @@ def get_faces_batch():
                 "",
                 face_encoding
             )
+        detected_faces.append(face)
         
         # annotate face
-        top *= 4
-        right *= 4
-        bottom *= 4
-        left *= 4
+        top *= 2
+        right *= 2
+        bottom *= 2
+        left *= 2
 
         # draw a box around the face
         cv2.rectangle(frame, (left, top), (right, bottom), (0, 0, 255), 2)
@@ -129,7 +124,6 @@ def get_faces_batch():
         cv2.rectangle(frame, (left, bottom - 35), (right, bottom), (0, 0, 255), cv2.FILLED)
         font = cv2.FONT_HERSHEY_DUPLEX
         cv2.putText(frame, face.first_name, (left + 6, bottom - 6), font, 1.0, (255, 255, 255), 1)
-        print("Can see " + face.first_name)
 
     video_capture.release()
-    return
+    return (detected_faces, frame)

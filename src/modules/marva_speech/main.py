@@ -1,32 +1,50 @@
-import time
 import os
-from gtts import gTTS
+import time
+
+import torch
 from pygame import mixer
 
 
 # Define global variables
 __location__: str
+speech_model: any
 
 
-# Init module
+# Download TTS model if not already downloaded, and set up mixer
 def init():
-    global __location__
+    global __location__, speech_model
 
     print("--Initialising speech module--")
     
     __location__ = os.path.realpath(os.path.join(os.getcwd(), os.path.dirname(__file__)))
     mixer.init()
 
+    device = torch.device('cpu')
+    torch.set_num_threads(4)
+    local_file = 'model.pt'
 
-# Say a given string
-def say(text: str):
-    global __location__
+    if not os.path.isfile(local_file):
+        torch.hub.download_url_to_file('https://models.silero.ai/models/tts/en/v3_en.pt',
+                                    local_file)  
+
+    speech_model = torch.package.PackageImporter(local_file).load_pickle("tts_models", "model")
+    speech_model.to(device)
+
+
+# Text to speech function
+# Good voices are [18, 24, 48, 61, 82, 107]
+def say(text: str, voice: str = 'en_24'):
+    global __location__, speech_model
 
     # wait for mixer to be done
     while mixer.music.get_busy() == True:
         time.sleep(0.1)
 
-    tts = gTTS(text=text, tld='com', lang='en')
-    tts.save(__location__ + '/speach.mp3')
-    mixer.music.load(__location__ + '/speach.mp3')
+    # speaker='en_1'
+    # print(speech_model)
+    speech_model.save_wav(text=text,
+                        speaker=voice,
+                        sample_rate=48000)
+
+    mixer.music.load('test.wav')
     mixer.music.play()
