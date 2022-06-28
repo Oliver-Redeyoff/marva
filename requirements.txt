@@ -5,6 +5,10 @@ opencv-python
 # marva_speech module
 gtts
 pygame
+num2words
 
 # marva_slack module
 slackclient
+
+# marva_weather module
+geocoder

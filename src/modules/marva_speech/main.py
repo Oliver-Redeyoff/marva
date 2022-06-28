@@ -1,8 +1,10 @@
 import os
 import time
+import re
 
 import torch
 from pygame import mixer
+from num2words import num2words
 
 
 # Define global variables
@@ -38,6 +40,9 @@ def say(text: str, voice: str = 'en_24'):
     # wait for mixer to be done
     while mixer.music.get_busy() == True:
         time.sleep(0.1)
+
+    # replace numbers with text
+    text = re.sub(r"(\d+)", lambda x: num2words(int(x.group(0))), text)
 
     # generate audio file
     speech_model.save_wav(text=text,

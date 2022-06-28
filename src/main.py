@@ -1,9 +1,11 @@
 import time
 from queue import Queue
+import weakref
 
 from modules.marva_camera import main as camera
 from modules.marva_speech import main as speech
 from modules.marva_slack import main as slack
+from modules.marva_weather import main as weather
 
 
 # Define global variables
@@ -15,12 +17,13 @@ def main():
     global command_queue
 
     while(True):
-
-        # speech.say('Froliver. My name is Marva.')
-        speech.say('''At least two people have been confirmed dead and 20 injured in a missile strike at a crowded retail area in Kremenchuk in the Poltava region of Ukraine. President Zelensky posted this footage on his social media showing a badly damaged, collapsing building on fire. The Ukrainian president said Russia carried out the missile strike while more than 1,000 people were in the building.''')
         
         # Check command queue
-        # print(slack.get_new_command())
+        print(slack.get_new_command())
+
+        # Get weather
+        weather_data = weather.get_current_weather()
+        speech.say("It is currently {} degrees, with {}".format(round(weather_data['temp']), weather_data['weather'][0]['description']))
 
         # new_messages = slack.get_new_messages()
         # if ('Get faces' in new_messages):
@@ -32,7 +35,7 @@ def main():
         #     cv2.imwrite("test.png", image)
         #     slack.send_file("./test.png")
 
-        # time.sleep(2)
+        time.sleep(2)
 
 
 # Process command messaged through slack
@@ -56,7 +59,8 @@ if __name__ == "__main__":
     # initialise modules
     camera.init(ignore_cache=True)
     speech.init()
-    # slack.init()
+    slack.init()
+    weather.init()
 
     speech.say('Hi there, Oliver. My name is Marva.')
 
