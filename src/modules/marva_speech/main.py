@@ -21,13 +21,12 @@ def init():
 
     device = torch.device('cpu')
     torch.set_num_threads(4)
-    local_file = 'model.pt'
+    model_path = __location__ + '/model.pt'
 
-    if not os.path.isfile(local_file):
-        torch.hub.download_url_to_file('https://models.silero.ai/models/tts/en/v3_en.pt',
-                                    local_file)  
+    if not os.path.isfile(model_path):
+        torch.hub.download_url_to_file('https://models.silero.ai/models/tts/en/v3_en.pt', model_path)  
 
-    speech_model = torch.package.PackageImporter(local_file).load_pickle("tts_models", "model")
+    speech_model = torch.package.PackageImporter(model_path).load_pickle("tts_models", "model")
     speech_model.to(device)
 
 
@@ -40,11 +39,12 @@ def say(text: str, voice: str = 'en_24'):
     while mixer.music.get_busy() == True:
         time.sleep(0.1)
 
-    # speaker='en_1'
-    # print(speech_model)
+    # generate audio file
     speech_model.save_wav(text=text,
                         speaker=voice,
-                        sample_rate=48000)
+                        sample_rate=48000,
+                        audio_path= __location__ + '/speech.wav')
 
-    mixer.music.load('test.wav')
+    # play audio file
+    mixer.music.load(__location__ + '/speech.wav')
     mixer.music.play()

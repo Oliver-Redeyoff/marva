@@ -16,7 +16,7 @@ def main():
 
     while(True):
 
-        speech.say('Froliver. My name is Marva.')
+        # speech.say('Froliver. My name is Marva.')
         speech.say('''At least two people have been confirmed dead and 20 injured in a missile strike at a crowded retail area in Kremenchuk in the Poltava region of Ukraine. President Zelensky posted this footage on his social media showing a badly damaged, collapsing building on fire. The Ukrainian president said Russia carried out the missile strike while more than 1,000 people were in the building.''')
         
         # Check command queue
@@ -59,7 +59,6 @@ if __name__ == "__main__":
     # slack.init()
 
     speech.say('Hi there, Oliver. My name is Marva.')
-    speech.say('I can currently see the faces of: Oliver, Tilly, and Jade.')
 
     # start main loop
     main()
